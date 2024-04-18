@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var container = document.querySelector(".container");
+      var overlay = document.querySelector(".overlay");
+      container.addEventListener("mousemove", function (e) {
+        const cardWidth = container.offsetWidth;
+        const cardHeight = container.offsetHeight;
+        const mouseX = e.offsetX;
+        const mouseY = e.offsetY;
+        const rotateY = -75 * (mouseX / cardWidth - 0.5);
+        const rotateX = 75 * (mouseY / cardHeight - 0.5);
+
+        const bgPosX = 50 + rotateY;
+        const bgPosY = 50 - rotateX;
+        overlay.style.transition = `background-position 0.15s, filter 0.15s`;
+        overlay.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
+
+        const brightness = 1 + 0.5 * Math.abs(rotateY / 75);
+        const opacity = 0.7 + 0.3 * (1 - Math.abs(rotateY / 75));
+        overlay.style.filter = `brightness(${brightness}) opacity(${opacity})`;
+
+        container.style.transition = `transform 0.15s`;
+        container.style.transform = `perspective(1000px) 
+                                rotateY(${rotateY}deg) 
+                                rotateX(${rotateX}deg)`;
+      });
+
+      container.addEventListener("mouseleave", function () {
+        setTimeout(() => {
+          container.style.transition = `transform 1s`;
+          container.style.transform = `perspective(1000px) 
+                                        rotateY(0deg) 
+                                        rotateX(0deg)`;
+          overlay.style.transition = `background-position 1s, filter 1s`;
+          overlay.style.backgroundPosition = `100%`;
+          overlay.style.filter = `brightness(1.1) opacity(0.7)`;
+        }, 500);
+      });
+    });
+  </script>
+  <style>
+    html,
+    body {
+      height: 90%;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      width: 330px;
+      height: 465px;
+      position: relative;
+      transform-style: preserve-3d;
+    }
+    .overlay {
+      position: absolute;
+      width: 330px;
+      height: 465px;
+      background: linear-gradient(
+        105deg,
+        transparent 40%,
+        rgba(255, 219, 112, 0.7) 45%,
+        rgba(132, 50, 255, 0.3) 50%,
+        transparent 54%
+      );
+      filter: brightness(1.1) opacity(0.7);
+      mix-blend-mode: color-dodge;
+      background-size: 150% 150%;
+      background-position: 100%;
+      will-change: filter, background;
+      transform: translateZ(0); /* 하드웨어 가속을 위한 추가 */
+    }
+    .card {
+      width: 330px;
+      height: 465px;
+      background-size: cover;
+    }
+  </style>
+  <body>
+    <div class="container">
+      <div class="overlay"></div>
+      <img class="card" src="poke_wild_card.png" alt="card" />
+    </div>
+  </body>
+</html>
